@@ -1,14 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core import validators
 from django.db import models
+from validators import HexColorValidator
 
 User = get_user_model()
-
-COLOR = (
-    ('#fecc4d', '#fecc4d'),
-    ('#48a3e7', '#48a3e7'),
-    ('#ef3a3a', '#ef3a3a'),
-)
 
 
 class Ingredients(models.Model):
@@ -33,7 +28,10 @@ class Ingredients(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    color = models.TextField(unique=True, choices=COLOR)
+    color = models.TextField(
+        unique=True,
+        validators=[HexColorValidator()],
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -55,35 +53,29 @@ class Recipe(models.Model):
     name = models.CharField(
         help_text='Введите название блюда',
         max_length=200,
-        blank=False,
         verbose_name='Название рецепта',
     )
     image = models.ImageField(
         upload_to='recipe/',
-        blank=False,
         verbose_name='Картинка',
     )
     text = models.TextField(
         help_text='Добавьте описание рецепта',
         max_length=1000,
-        blank=False,
         verbose_name='Описание рецепта',
     )
     ingredients = models.ManyToManyField(
         Ingredients,
         through='RecipeIngredients',
-        blank=False,
+        related_name='ingredients',
         verbose_name='Ингридиенты',
     )
     tags = models.ManyToManyField(
         Tag,
-        # null=True,
-        blank=False,
         verbose_name='Тэг',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
-        blank=False,
         null=False,
         validators=[
             validators.MinValueValidator(
@@ -115,7 +107,7 @@ class RecipeIngredients(models.Model):
         verbose_name='Ингридиент',
         unique=True,
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         validators=[
             validators.MinValueValidator(
                 1,
@@ -137,20 +129,22 @@ class Favorite(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        unique=True,
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт в избранном',
         related_name='favorite_recipes',
-        unique=True,
     )
 
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
         ordering = ('user', 'recipe')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorite_recipe')]
 
     def __str__(self):
         return f'{self.user}, {self.recipe}'
@@ -176,6 +170,10 @@ class ShoppingCart(models.Model):
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзина покупок'
         ordering = ('user', 'recipe')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_recipe_in_shopping_cart')]
 
     def __str__(self):
         return f'{self.user}, {self.recipe}'

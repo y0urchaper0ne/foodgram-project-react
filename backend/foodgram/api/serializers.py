@@ -96,13 +96,12 @@ class PasswordSerializer(serializers.Serializer):
 
 class FavouriteRecipeSerializer(serializers.ModelSerializer):
     """Вывод списка рецептов из избранного"""
-    name = serializers.ReadOnlyField()
     image = Base64ImageField(read_only=True)
-    cooking_time = serializers.ReadOnlyField()
 
     class Meta:
         model = Recipe
         firlds = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ['name', 'cooking_time',]
 
 
 class SubscriptionListSerializer(serializers.ModelSerializer):
@@ -141,8 +140,6 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(serializers.ModelSerializer):
     """Подписка на польщователя"""
-    email = serializers.ReadOnlyField()
-    username = serializers.ReadOnlyField()
     is_subscribed = serializers.SerializerMethodField(
         method_name='get_is_subscribed')
     recipes = FavouriteRecipeSerializer(many=True,
@@ -155,6 +152,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'username', 'first_name',
                   'last_name', 'is_subscribed', 'recipes',
                   'recipes_amount',)
+        read_only_fields = ['email', 'username',]
 
     def validate(self, obj):
         if self.context.get('request').user == obj:
@@ -205,8 +203,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
     author = UserListSerializer(read_only=True)
     image = Base64ImageField()
     tag = TagListSerializer(read_only=True, many=True)
-    ingredients = serializers.SerializerMethodField(
-        method_name='get_ingredients')
+    ingredients = RecipeIngrediensSerializer(
+        source = 'recipe.ingredients')
     is_favourite = serializers.SerializerMethodField(
         method_name='get_is_favourite')
     is_in_shopping_cart = serializers.SerializerMethodField(
@@ -241,11 +239,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class IngredientsInReipe(serializers.ModelSerializer):
     """Добавление ингридиентов в рецепт"""
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = RecipeIngredients
-        fields = 'id', 'amount'
+        fields = ('id', 'amount',)
 
     def validate_amount(self, value):
         if value <= 0:
@@ -261,7 +258,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientsInReipe(many=True)
     tags = serializers.PrimaryKeyRelatedField(many=True,
                                               queryset=Tag.objects.all())
-    cooking_time = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = Recipe

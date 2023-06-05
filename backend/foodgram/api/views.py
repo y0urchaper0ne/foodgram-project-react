@@ -21,8 +21,7 @@ from .serializers import (UserListSerializer, SignUpSerializer,
                           SubscriptionListSerializer, SubscribeSerializer,
                           TagListSerializer, IngredientsListSerializer,
                           RecipeListSerializer, PasswordSerializer,
-                          RecipeCreateSerializer, RecipeIngrediensSerializer,
-                          IngredientsInReipe, )
+                          RecipeCreateSerializer, FavouriteRecipeSerializer,)
 
 from recipe.models import (Recipe, Ingredients, Tag, Favorite,
                            ShoppingCart, RecipeIngredients,)
@@ -37,7 +36,8 @@ class UserViewSet(UserViewSet):
     def get_serializer_class(self):
         if self.action in SAFE_METHODS:
             return UserListSerializer
-        return SignUpSerializer    
+        return SignUpSerializer
+    
     @action(detail=False, methods=['GET',], url_path='me',
             pagination_class=CustomPagination,
             permission_classes = (IsAuthenticated,))
@@ -124,6 +124,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             except IntegrityError:
                 Response('Рецепт уже находится в избранном',
                          status=status.HTTP_400_BAD_REQUEST)
+            serializer = FavouriteRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             get_object_or_404(Favorite, user=request.user, 
                               recipe=recipe).delete()
@@ -137,7 +139,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, **kwargs):
         recipe = get_object_or_404(Recipe, id=kwargs['id'])
         if request.method == 'POST':
-            serializer = RecipeListSerializer(recipe, data=request.data,
+            serializer = FavouriteRecipeSerializer(recipe, data=request.data,
                                               context={"request": request})
             serializer.is_valid(raise_exception=True)
             if not ShoppingCart.objects.filter(user=request.user,
@@ -184,5 +186,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename={filename}'
 
         return response
-
-

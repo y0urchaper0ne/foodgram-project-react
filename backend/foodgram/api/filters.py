@@ -1,5 +1,7 @@
 from django_filters.rest_framework import FilterSet, filters
+
 from recipe.models import Ingredients, Recipe, Tag
+
 
 class IngredientFilter(FilterSet):
     name = filters.CharFilter(
@@ -10,6 +12,7 @@ class IngredientFilter(FilterSet):
     class Meta:
         model = Ingredients
         fields = ('name',)
+
 
 class RecipeFilter(FilterSet):
     tags = filters.ModelMultipleChoiceFilter(field_name='tags__slug',
