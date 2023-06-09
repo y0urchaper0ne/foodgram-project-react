@@ -50,6 +50,7 @@ jobs:
             sudo systemctl stop nginx
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
+            cd infra/
             sudo docker compose stop
             sudo docker compose rm backend frontend
             rm .env
