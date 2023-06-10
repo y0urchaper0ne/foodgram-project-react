@@ -140,7 +140,7 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    """Подписка на польщователя"""
+    """Подписка на пользователя"""
     is_subscribed = serializers.SerializerMethodField()
     recipes = FavouriteRecipeSerializer(many=True,
                                         read_only=True)
@@ -260,6 +260,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientsInReipe(many=True)
     tags = serializers.PrimaryKeyRelatedField(many=True,
                                               queryset=Tag.objects.all())
+    cooking_time = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = Recipe
