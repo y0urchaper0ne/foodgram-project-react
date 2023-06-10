@@ -82,19 +82,22 @@ class UserViewSet(UserViewSet):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class TagViewSet((mixins.ListModelMixin,
+                 mixins.RetrieveModelMixin,
+                 viewsets.GenericViewSet)):
     queryset = Tag.objects.all()
-    pagination_class = CustomPagination
+    pagination_class = None
     permission_classes = (AllowAny,)
     serializer_class = TagListSerializer
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin,
+                        viewsets.GenericViewSet):
     queryset = Ingredient.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = IngredientsListSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    pagination_class = None
     filterset_class = IngredientFilter
 
 
@@ -104,7 +107,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     pagination_class = CustomPagination
     filterset_class = RecipeFilter
-    filterset_fields = ('tag',)
+    http_method_names = ['get', 'post', 'patch', 'create', 'delete']
+
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
