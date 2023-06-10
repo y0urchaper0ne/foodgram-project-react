@@ -80,7 +80,9 @@ class PasswordSerializer(serializers.Serializer):
         try:
             validate_password(obj['new_password'])
         except exceptions.ValidationError as error:
-            raise serializers.ValidationError(error.message)
+            raise serializers.ValidationError(
+                 {'new_password': list(error.messages)}
+            )
         return super().validate(obj)
 
     def update(self, instance, validated_data):
