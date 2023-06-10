@@ -23,7 +23,7 @@ from .serializers import (UserListSerializer, SignUpSerializer,
                           RecipeListSerializer, PasswordSerializer,
                           RecipeCreateSerializer, FavouriteRecipeSerializer,)
 
-from recipe.models import (Recipe, Ingredients, Tag, Favorite,
+from recipe.models import (Recipe, Ingredient, Tag, Favorite,
                            ShoppingCart, RecipeIngredients,)
 from users.models import User, Subscribe
 
@@ -90,7 +90,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ingredients.objects.all()
+    queryset = Ingredient.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = IngredientsListSerializer
     filter_backends = (filters.SearchFilter,)

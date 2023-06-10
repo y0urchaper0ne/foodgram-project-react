@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import (Recipe, Ingredients, Tag, Favorite,
+from .models import (Recipe, Ingredient, Tag, Favorite,
                      ShoppingCart, RecipeIngredients,)
 
 
-@admin.register(Ingredients)
+@admin.register(Ingredient)
 class IngredientsAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'measurement_unit',
     )
     list_filter = ('name',)
     empty_value_display = '-пусто-'
-    model = Ingredients
+    model = Ingredient
 
 
 @admin.register(Tag)

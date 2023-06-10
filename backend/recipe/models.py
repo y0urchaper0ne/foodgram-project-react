@@ -6,7 +6,7 @@ from .validators import HexColorValidator
 User = get_user_model()
 
 
-class Ingredients(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(
         max_length=200,
         unique=True,
@@ -65,7 +65,7 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта',
     )
     ingredients = models.ManyToManyField(
-        Ingredients,
+        Ingredient,
         through='RecipeIngredients',
         related_name='ingredients',
         verbose_name='Ингридиенты',
@@ -102,7 +102,7 @@ class RecipeIngredients(models.Model):
         unique=True,
     )
     ingredients = models.ForeignKey(
-        Ingredients,
+        Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингридиент',
         unique=True,

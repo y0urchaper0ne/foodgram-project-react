@@ -11,7 +11,7 @@ from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from recipe.models import (Ingredients, Tag, Recipe,
+from recipe.models import (Ingredient, Tag, Recipe,
                            Favorite, ShoppingCart,
                            RecipeIngredients,)
 from users.models import Subscribe
@@ -180,7 +180,7 @@ class TagListSerializer(serializers.ModelSerializer):
 class IngredientsListSerializer(serializers.ModelSerializer):
     """Вывод списка ингридиентов"""
     class Meta:
-        model = Ingredients
+        model = Ingredient
         fields = '__all__'
 
 
@@ -292,7 +292,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         RecipeIngredients.objects.bulk_create(
             [RecipeIngredients(
                 recipe=recipe,
-                ingredient=Ingredients.objects.get(id=ingredient['id']),
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
         )
