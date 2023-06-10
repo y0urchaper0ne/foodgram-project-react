@@ -4,7 +4,7 @@ from .models import (Recipe, Ingredient, Tag, Favorite,
 
 
 @admin.register(Ingredient)
-class IngredientsAdmin(admin.ModelAdmin):
+class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'measurement_unit',
     )
