@@ -203,7 +203,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     """Вывод списка рецептов"""
     author = UserListSerializer(read_only=True)
     image = Base64ImageField()
-    tag = TagListSerializer(read_only=True, many=True)
+    tags = TagListSerializer(read_only=True, many=True)
     ingredients = serializers.SerializerMethodField(
         method_name='get_ingredients')
     is_favorited = serializers.SerializerMethodField(
