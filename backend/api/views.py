@@ -40,10 +40,10 @@ class UserViewSet(mixins.CreateModelMixin,
             return UserListSerializer
         return SignUpSerializer
     
-    @action(detail=False, methods=['GET',], url_path='me',
+    @action(detail=False, methods=['GET',],
             pagination_class=CustomPagination,
             permission_classes = (IsAuthenticated,))
-    def users_own_profile(self, request):
+    def me(self, request):
         serializer = UserListSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
