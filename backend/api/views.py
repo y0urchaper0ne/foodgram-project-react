@@ -35,7 +35,7 @@ class UserViewSet(mixins.CreateModelMixin,
     permission_classes = (AllowAny,)
 
     def get_serializer_class(self):
-        if self.action in SAFE_METHODS:
+        if self.action in ('list', 'retrieve'):
             return UserListSerializer
         return SignUpSerializer
     
@@ -112,7 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
     def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
+        if self.action in ('list', 'retrieve'):
             return RecipeListSerializer
         return RecipeCreateSerializer
 
