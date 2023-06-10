@@ -187,7 +187,7 @@ class IngredientsListSerializer(serializers.ModelSerializer):
 
 class RecipeIngrediensSerializer(serializers.ModelSerializer):
     """Список ингридиентов для рецепта"""
-    id = serializers.ReadOnlyField(source='ingredients.id')
+    id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(
         source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
