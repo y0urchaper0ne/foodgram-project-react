@@ -38,11 +38,13 @@ class UserListSerializer(UserSerializer):
                   'last_name', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Subscribe.objects.filter(user=user, 
-                                        author=obj).exists()
+        request = self.context.get('request')
+        if request:
+            if not request.user.is_anonymous:
+                return Subscribe.objects.filter(
+                    user=request.user,
+                    author=obj).exists()
+        return False
 
 
 class SignUpSerializer(UserCreateSerializer):
@@ -118,11 +120,13 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         return obj.recipe.count()
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Subscribe.objects.filter(
-            user=user, author=obj).exists()
+        request = self.context.get('request')
+        if request:
+            if not request.user.is_anonymous:
+                return Subscribe.objects.filter(
+                    user=request.user,
+                    author=obj).exists()
+        return False
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -156,11 +160,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return obj.recipe.count()
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Subscribe.objects.filter(
-            user=user, author=obj).exists()
+        request = self.context.get('request')
+        if request:
+            if not request.user.is_anonymous:
+                return Subscribe.objects.filter(
+                    user=request.user,
+                    author=obj).exists()
+        return False
 
 
 class TagListSerializer(serializers.ModelSerializer):
