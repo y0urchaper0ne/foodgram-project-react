@@ -30,9 +30,7 @@ class Base64ImageField(serializers.ImageField):
 
 class UserListSerializer(UserSerializer):
     """Вывод списка пользователей"""
-    is_subscribed = serializers.SerializerMethodField(
-        method_name='get_is_subscribed'
-    )
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -43,16 +41,16 @@ class UserListSerializer(UserSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Subscribe.objects.filter(
-            user=user, author=obj).exists()
+        return Subscribe.objects.filter(user=user, 
+                                        author=obj).exists()
 
 
 class SignUpSerializer(UserCreateSerializer):
     """Создание нового пользователя"""
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'password')
+        fields = ('id', 'username', 'email', 
+                  'first_name','last_name', 'password')
 
     def validate_username(self, value):
         value_lower = value.lower()
@@ -100,18 +98,15 @@ class FavouriteRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        firlds = ('id', 'name', 'image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time')
         read_only_fields = ['name', 'cooking_time',]
 
 
 class SubscriptionListSerializer(serializers.ModelSerializer):
     """Вывод подписчиков пользователя"""
-    recipes_amount = serializers.SerializerMethodField(
-        method_name='get_recipes_amount')
-    is_subscribed = serializers.SerializerMethodField(
-        method_name='get_is_subscribed')
-    recipe = serializers.SerializerMethodField(
-        method_name='get_recipe')
+    recipes_amount = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
 
     class Meta:
         model = Subscribe
@@ -129,7 +124,7 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         return Subscribe.objects.filter(
             user=user, author=obj).exists()
 
-    def get_recipe(self, obj):
+    def get_recipes(self, obj):
         request = self.context.get('request')
         recipes = obj.recipe.all()
         recipes_limit = request.query_params.get('recipes_limit')
@@ -140,12 +135,10 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(serializers.ModelSerializer):
     """Подписка на польщователя"""
-    is_subscribed = serializers.SerializerMethodField(
-        method_name='get_is_subscribed')
+    is_subscribed = serializers.SerializerMethodField()
     recipes = FavouriteRecipeSerializer(many=True,
-                                       read_only=True)
-    recipes_amount = serializers.SerializerMethodField(
-        method_name='get_is_subscribed')
+                                        read_only=True)
+    recipes_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Subscribe
@@ -155,7 +148,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         read_only_fields = ['email', 'username',]
 
     def validate(self, obj):
-        if self.context.get('request').user == obj:
+        if (self.context.get('request').user == obj):
             raise ValidationError('Нельзя подписаться на себя')
         return obj
 
@@ -203,10 +196,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
     author = UserListSerializer(read_only=True)
     image = Base64ImageField()
     tag = TagListSerializer(read_only=True, many=True)
-    ingredients = RecipeIngrediensSerializer(
-        source = 'recipe.ingredients')
-    is_favourite = serializers.SerializerMethodField(
-        method_name='get_is_favourite')
+    ingredients = serializers.SerializerMethodField(
+        method_name='get_ingredients')
+    is_favorited = serializers.SerializerMethodField(
+        method_name='get_is_favorited')
     is_in_shopping_cart = serializers.SerializerMethodField(
         method_name='get_is_in_shopping_cart')
 
@@ -221,7 +214,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         serializer = RecipeIngrediensSerializer(ingredients, many=True)
         return serializer.data
 
-    def get_is_favourite(self, obj):
+    def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
@@ -239,6 +232,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class IngredientsInReipe(serializers.ModelSerializer):
     """Добавление ингридиентов в рецепт"""
     id = serializers.IntegerField()
+    amount = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = RecipeIngredients
@@ -261,13 +255,24 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id','tags', 'author', 'ingredients',
+        fields = ('id', 'tags', 'author', 'ingredients',
             'name', 'image', 'text', 'cooking_time',)
+        read_only_fields = ['id',]
+
+    def validate(self, obj):
+        for field in ['name', 'text', 'cooking_time']:
+            if not obj.get(field):
+                raise serializers.ValidationError(
+                    'Пожалуйста, заполните все поля!')
+        if not obj.get('tags'):
+            raise serializers.ValidationError(
+                'Пожалуйста, укажите хотя бы один тег!')
+        return obj
         
     def validate_ingredients(self, ingredients):
         if not ingredients:
             raise serializers.ValidationError(
-                'Добавьте как минимум 1 ингредиент')
+                'Добавьте как минимум один ингредиент')
     
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
@@ -292,7 +297,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         RecipeIngredients.objects.bulk_create(
             [RecipeIngredients(
                 recipe=recipe,
-                ingredient=Ingredient.objects.get(id=ingredient['id']),
+                ingredient=Ingredient.objects.get(pk=ingredient['id']),
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
         )

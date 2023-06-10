@@ -49,29 +49,34 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='recipe',
-        verbose_name='Автор')
+        verbose_name='Автор',
+        blank=False,)
     name = models.CharField(
         help_text='Введите название блюда',
         max_length=200,
         verbose_name='Название рецепта',
+        blank=False,
     )
     image = models.ImageField(
         upload_to='recipe/',
         verbose_name='Картинка',
+        blank=False,
     )
     text = models.TextField(
         help_text='Добавьте описание рецепта',
         max_length=1000,
         verbose_name='Описание рецепта',
+        blank=False,
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredients',
-        related_name='ingredients',
+        blank=False,
         verbose_name='Ингридиенты',
     )
     tags = models.ManyToManyField(
         Tag,
+        blank=False,
         verbose_name='Тэг',
     )
     cooking_time = models.PositiveSmallIntegerField(
@@ -92,6 +97,9 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
         ordering = ['-pub_date']
+
+    def __str__(self):
+        return f'Рецепт: "{self.name}"'
 
 
 class RecipeIngredients(models.Model):
