@@ -82,9 +82,9 @@ class UserViewSet(UserViewSet):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class TagViewSet((mixins.ListModelMixin,
+class TagViewSet(mixins.ListModelMixin,
                  mixins.RetrieveModelMixin,
-                 viewsets.GenericViewSet)):
+                 viewsets.GenericViewSet):
     queryset = Tag.objects.all()
     pagination_class = None
     permission_classes = (AllowAny,)
