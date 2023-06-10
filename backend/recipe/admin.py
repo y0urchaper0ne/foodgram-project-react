@@ -48,6 +48,6 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 
 @admin.register(RecipeIngredients)
 class RecipeIngredientsAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredients', 'amount')
+    list_display = ('recipe', 'ingredient', 'amount')
     empty_value_display = '-пусто-'
     model = RecipeIngredients
