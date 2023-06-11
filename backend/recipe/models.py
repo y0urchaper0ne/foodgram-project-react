@@ -46,42 +46,39 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    REQUIRED_FIELDS = ['name', 'image', 'text',
-                       'ingredients', 'tags', 'cooking_time']
+    '''Модель Рецепт'''
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='recipe',
-        verbose_name='Автор',
         blank=False,
+        verbose_name='Автор'
     )
     name = models.CharField(
-        help_text='Введите название блюда',
-        max_length=200,
-        verbose_name='Название рецепта',
+        max_length=255,
         blank=False,
+        verbose_name='Название'
     )
     image = models.ImageField(
-        upload_to='recipe/',
-        verbose_name='Картинка',
+        upload_to='photos/',
         blank=False,
+        verbose_name='Картинка'
     )
     text = models.TextField(
-        help_text='Добавьте описание рецепта',
-        max_length=1000,
-        verbose_name='Описание рецепта',
+        verbose_name='Описание',
         blank=False,
+        help_text='Введите текст описания'
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipeIngredients',
+        through='IngredientRecipe',
         blank=False,
-        verbose_name='Ингридиенты',
+        verbose_name='Ингредиент',
     )
     tags = models.ManyToManyField(
         Tag,
         blank=False,
-        verbose_name='Тег',
+        verbose_name='Тег'
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
