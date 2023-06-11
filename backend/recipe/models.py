@@ -46,8 +46,6 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    REQUIRED_FIELDS = ['name', 'image', 'text',
-                       'ingredients', 'tags', 'cooking_time']
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

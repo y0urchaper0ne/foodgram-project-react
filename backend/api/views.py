@@ -108,7 +108,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     pagination_class = CustomPagination
     filterset_class = RecipeFilter
-    # http_method_names = ['GET', 'POST', 'PATCH', 'CREATE', 'DELETE']
+    http_method_names = ['GET', 'POST', 'PATCH', 'CREATE', 'DELETE']
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
