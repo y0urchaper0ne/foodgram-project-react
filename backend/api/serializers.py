@@ -12,7 +12,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from recipe.models import (Ingredient, Tag, Recipe,
-                           Favorite, ShoppingCart,
+                           Favorite, ShoppingСart,
                            RecipeIngredients,)
 from users.models import Subscribe
 
@@ -236,7 +236,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         '''Проверка рецепта на наличие в списке покупок'''
         return (
             self.context.get('request').user.is_authenticated
-            and ShoppingCart.objects.filter(
+            and ShoppingСart.objects.filter(
                 user=self.context.get('request').user,
                 recipe=obj).exists())
 
