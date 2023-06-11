@@ -126,14 +126,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             try:
                 Favorite.objects.create(user=request.user, recipe=recipe)
             except IntegrityError:
-                Response('Рецепт уже находится в избранном',
+                Response(
                          status=status.HTTP_400_BAD_REQUEST)
             serializer = FavouriteRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
             get_object_or_404(Favorite, user=request.user, 
                               recipe=recipe).delete()
-            Response('Рецеп успешно удален из избранного',
+            Response(
                      status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
@@ -152,12 +152,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                             recipe=recipe)
                 return Response(serializer.data, 
                                 status=status.HTTP_201_CREATED)
-            return Response('Рецепт уже добавлен в список покупок',
+            return Response(
                             status=status.HTTP_400_BAD_REQUEST)
         if request.method == 'DELETE':
             get_object_or_404(ShoppingCart, user=request.user,
                               recipe=recipe).delete()
-            Response('Рецеп успешно удален из списка покупок',
+            Response(
                      status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
@@ -166,7 +166,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
         current_date = date.today()
         if not user.shopping_cart.exists():
-            Response('Ваш список покупок пуст',
+            Response(
                     status=status.HTTP_400_BAD_REQUEST)
         ingredients = (
             RecipeIngredients.objects
