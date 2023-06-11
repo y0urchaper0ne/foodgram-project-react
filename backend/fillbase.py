@@ -1,15 +1,22 @@
-import csv
-import sqlite3
+from csv import reader
 
-con = sqlite3.connect(r'/Users/ilya/Dev/foodgram-project-react/backend/foodgram/db.sqlite3')
-cur = con.cursor()
-with open('/Users/ilya/Dev/foodgram-project-react/backend/foodgram/ingredients.csv', 'r', encoding='utf-8') as file:
-    reader = csv.DictReader(file)
-    to_db = []
-    for row in reader:
-        print(f'Добавляем строку {row["name"]}, {row["measurement_unit"]}')
-        to_db.append((row['name'], row['measurement_unit']))
+from django.core.management.base import BaseCommand
+from recipe.models import Ingredient
 
-cur.executemany('INSERT or IGNORE INTO recipe_ingredients (name, measurement_unit) VALUES (?, ?);', to_db)
-con.commit()
-con.close()
+
+class Command(BaseCommand):
+    help = 'Load ingredients data from csv-file to DB.'
+
+    def handle(self, *args, **kwargs):
+        with open(
+                'recipes/data/ingredients.csv', 'r',
+                encoding='UTF-8'
+        ) as ingredients:
+            for row in reader(ingredients):
+                if len(row) == 2:
+                    if not Ingredient.objects.filter(
+                        name=row[0], measurement_unit=row[1],
+                    ).exists():
+                        Ingredient.objects.get_or_create(
+                            name=row[0], measurement_unit=row[1],
+                        )
