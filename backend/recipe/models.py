@@ -170,14 +170,12 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
         related_name='shopping_cart',
-        unique=True,
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='shopping_cart_recipe',
         verbose_name='Рецепт в корзине',
-        unique=True,
     )
 
     class Meta:
