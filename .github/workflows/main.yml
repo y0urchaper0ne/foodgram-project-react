@@ -49,7 +49,7 @@ jobs:
           script: |
             sudo systemctl stop nginx
             cd infra/
-            sudo docker compose down -v
+            sudo docker compose stop
             sudo docker compose rm backend frontend
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
