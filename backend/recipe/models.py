@@ -9,7 +9,6 @@ User = get_user_model()
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=200,
-        unique=True,
         blank=False,
         verbose_name='Название ингридиента'
         )
@@ -21,6 +20,10 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='unique_ingredient')]
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -78,7 +81,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         blank=False,
-        verbose_name='Тэг',
+        verbose_name='Тег',
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
@@ -106,27 +109,25 @@ class Recipe(models.Model):
 class RecipeIngredients(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.CASCADE,
-        verbose_name='Рецепт',
         related_name='recipe_ingredient',
-    )
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт')
     ingredient = models.ForeignKey(
         Ingredient,
-        on_delete=models.CASCADE,
-        verbose_name='Ингридиент',
         related_name='ingredient_recipe',
-    )
-    amount = models.PositiveSmallIntegerField(
-        validators=[
-            validators.MinValueValidator(
-                1,
-                message='Добавьте как минимум один ингридиент'
-            )],
+        on_delete=models.CASCADE,
+        verbose_name='Ингредиент')
+    amount = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(
+            1, message='Минимальное количество ингредиента - 1!')
+        ],
         verbose_name='Количество'
     )
 
     class Meta:
-        verbose_name = 'Количество ингридиентов'
+        verbose_name = 'Ингредиент (кол-во)'
+        verbose_name_plural = 'Ингредиенты (кол-во)'
+        ordering = ('ingredient__name',)
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -134,7 +135,7 @@ class RecipeIngredients(models.Model):
 
     def __str__(self):
         return (f'{self.ingredient.name} {self.amount}'
-                f' {self.ingredient.measurement_unit}')
+                f'{self.ingredient.measurement_unit}')
 
 
 class Favorite(models.Model):

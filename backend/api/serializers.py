@@ -255,6 +255,7 @@ class IngredientsInReipe(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Создание и изменение рецепта"""
+    id = serializers.ReadOnlyField()
     author = UserListSerializer(read_only=True)
     image = Base64ImageField()
     ingredients = IngredientsInReipe(many=True)
@@ -264,9 +265,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'tags', 'author', 'ingredients',
-            'name', 'image', 'text', 'cooking_time',)
-        read_only_fields = ['id',]
+        exclude = ('pub_date',)
 
     def validate(self, obj):
         for field in ['name', 'text', 'cooking_time']:
