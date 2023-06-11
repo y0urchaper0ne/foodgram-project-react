@@ -281,21 +281,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 'Пожалуйста, укажите хотя бы один тег!')
         return obj
         
-    # def validate_ingredients(self, ingredients):
-    #     if not ingredients:
-    #         raise serializers.ValidationError(
-    #             'Добавьте как минимум один ингредиент')
+    def validate_ingredients(self, ingredients):
+        if not ingredients:
+            raise serializers.ValidationError(
+                'Добавьте как минимум один ингредиент')
     
-    #     for ingredient in ingredients:
-    #         if int(ingredient['amount']) <= 0:
-    #             raise serializers.ValidationError(
-    #                 'Количество ингредиента должно быть больше 0')
-    #     ing = [item['id'] for item in ingredients]
-    #     if len(ing) != len(set(ing)):
-    #         raise serializers.ValidationError(
-    #             'Ингредиенты не могут повторяться'
-    #         )
-    #     return ingredients
+        for ingredient in ingredients:
+            if int(ingredient['amount']) <= 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиента должно быть больше 0')
+        ing = [item['id'] for item in ingredients]
+        if len(ing) != len(set(ing)):
+            raise serializers.ValidationError(
+                'Ингредиенты не могут повторяться'
+            )
+        return ingredients
 
     def validate_cooking_time(self, value):
         if value <= 0:
@@ -309,7 +309,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         RecipeIngredients.objects.bulk_create(
             [RecipeIngredients(
                 recipe=recipe,
-                ingredient=Ingredient.objects.get(pk=ingredient['id']),
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
         )
