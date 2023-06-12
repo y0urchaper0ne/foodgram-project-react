@@ -133,7 +133,8 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         recipes = obj.recipe.all()
         recipes_limit = request.query_params.get('recipes_limit')
-        if recipes_limit:
+        if recipes_limit in request.GET:
+            recipes_limit = request.GET['recipes_limit']
             recipes = recipes[:int(recipes_limit)]
         return FavouriteRecipeSerializer(recipes, many=True).data
 
