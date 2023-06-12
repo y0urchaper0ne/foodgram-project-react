@@ -29,7 +29,7 @@ class IngredientInline(admin.StackedInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'favorite_amount',)
+        'id', 'name', 'author', 'favorite_amount',)
     list_filter = ('name', 'author', 'tags',)
     model = Recipe
     inlines = [IngredientInline,]
