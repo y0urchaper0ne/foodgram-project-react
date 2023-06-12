@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import display
 from .models import (Recipe, Ingredient, Tag, Favorite,
                      ShoppingСart, RecipeIngredients,)
 
@@ -25,21 +26,18 @@ class IngredientInline(admin.StackedInline):
     model = RecipeIngredients
 
 
-# @admin.register(Recipe)
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author', 'favorite_amount',
-    )
+        'id', 'name', 'author', 'favorite_amount',)
     list_filter = ('name', 'author', 'tags',)
-    empty_value_display = '-пусто-'
-    # model = Recipe
+    model = Recipe
     inlines = [IngredientInline,]
 
-    @admin.display(empty_value='Не добавлено в избранное')
+    @display(description = 'Добавлено в избранное',
+             empty_value='Не добавлено в избранное')
     def favorite_amount(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
-
-    favorite_amount.short_description = 'Добавлено в избранное'
 
 
 @admin.register(Favorite)
@@ -62,5 +60,3 @@ class RecipeIngredientsAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount')
     empty_value_display = '-пусто-'
     model = RecipeIngredients
-
-admin.site.register(Recipe, RecipeAdmin)
