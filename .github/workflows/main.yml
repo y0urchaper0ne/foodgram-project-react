@@ -51,6 +51,7 @@ jobs:
             cd infra/
             sudo docker compose stop
             sudo docker compose rm backend frontend
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
             rm .env
