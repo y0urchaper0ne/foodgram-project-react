@@ -59,7 +59,7 @@ class UserViewSet(mixins.CreateModelMixin,
             permission_classes=(IsAuthenticated,),
             pagination_class=CustomPagination)
     def subscriptions(self, request):
-        queryset = User.objects.filter(subscribe__user=request.user)
+        queryset = User.objects.filter(subscribe_to__user=request.user)
         page = self.paginate_queryset(queryset)
         serializer = SubscriptionListSerializer(page, many=True,
                                                 context={'request': request})

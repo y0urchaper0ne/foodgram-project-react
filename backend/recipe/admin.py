@@ -35,7 +35,7 @@ class RecipeAdmin(admin.ModelAdmin):
     model = Recipe
     inlines = [IngredientInline,]
 
-    @admin.display(empty_value='Не добавлено в избранное')
+    # @admin.display(empty_value='Не добавлено в избранное')
     def favorite_amount(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
 

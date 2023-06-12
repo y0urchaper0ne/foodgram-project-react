@@ -155,7 +155,8 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def validate(self, obj):
         if (self.context.get('request').user == obj):
-            raise ValidationError('Нельзя подписаться на себя')
+            raise ValidationError({'errors': 
+                                   'Нельзя подписаться на себя!'})
         return obj
 
     def get_recipes_amount(self, obj):
@@ -163,11 +164,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request:
-            if not request.user.is_anonymous:
-                return Subscribe.objects.filter(
-                    user=request.user,
-                    author=obj).exists()
+        if not request.user.is_anonymous:
+            return Subscribe.objects.filter(
+                user=request.user,
+                author=obj).exists()
         return False
 
 
