@@ -42,14 +42,12 @@ class Subscribe(models.Model):
         on_delete=models.CASCADE,
         related_name='subscribe',
         verbose_name='Подписан',
-        unique=True,
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='subscriber',
         verbose_name='Подписчик',
-        unique=True,
     )
 
     def __str__(self):
@@ -57,3 +55,9 @@ class Subscribe(models.Model):
 
     class Meta:
         verbose_name = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_subscribe'
+            )
+        ]

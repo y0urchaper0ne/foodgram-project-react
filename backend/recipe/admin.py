@@ -28,7 +28,7 @@ class IngredientInline(admin.StackedInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author',
+        'id', 'name', 'author', 'favorite_amount',
     )
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
