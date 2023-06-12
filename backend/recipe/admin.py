@@ -21,6 +21,10 @@ class TagAdmin(admin.ModelAdmin):
     model = Tag
 
 
+class IngredientInline(admin.StackedInline):
+    model = RecipeIngredients
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
@@ -29,6 +33,13 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
     model = Recipe
+    inlines = [IngredientInline,]
+
+    @admin.display(empty_value='Не добавлено в избранное')
+    def favorite_amount(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
+
+    favorite_amount.short_description = 'Добавлено в избранное'
 
 
 @admin.register(Favorite)
