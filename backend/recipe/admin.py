@@ -26,19 +26,10 @@ class IngredientInline(admin.StackedInline):
     model = RecipeIngredients
 
 
-if not hasattr(admin, 'display'):
-    def display(empty_value):
-        def decorator(fn):
-            fn.empty_value = empty_value
-            return fn
-        return decorator
-    setattr(admin, 'display', display)
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author', 'favorite_amount',)
+        'id', 'name', 'favorite_amount',)
     list_filter = ('name', 'author', 'tags',)
     model = Recipe
     inlines = [IngredientInline,]
